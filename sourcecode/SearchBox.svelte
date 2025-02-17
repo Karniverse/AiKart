@@ -18,7 +18,7 @@
     });
 </script>
 
-<div>
+<div class="search">
     <input
         type="text"
         id="searchBox"
@@ -29,9 +29,16 @@
 
 <style>
     #searchBox {
-        width: 95%;
-        padding: 10px;
-        margin-bottom: 10px;
-        font-size: 16px;
+        width: 30%;
+        padding: 8px;
+        margin: 6px;
+        font-size: 19px;
+        border: 1px solid #492d2d;
+        border-radius: 5px;
+    }
+    .search {
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 </style>
