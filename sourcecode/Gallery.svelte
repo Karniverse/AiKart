@@ -1,41 +1,47 @@
 <script>
     import { fade } from "svelte/transition";
-    export let imageUrls = []; // Image URLs passed from App.svelte
+    export let imageEntries = []; // Array of objects: { thumb, full, date }
+
     let selectedImage = null;
     let startX = 0; // For swipe gestures
 
-    function openLightbox(image) {
-        selectedImage = image;
+    // Open lightbox with the full-size image.
+    function openLightbox(fullImage) {
+        selectedImage = fullImage;
     }
 
+    // Close lightbox only if clicking on the background.
     function closeLightbox(event) {
-        // Close only if clicking the background, not the image or buttons
         if (event.target.classList.contains("lightbox")) {
             selectedImage = null;
         }
     }
 
+    // Go to next image. If called from a keyboard event, event may be undefined.
     function nextImage(event) {
-        event.stopPropagation(); // Prevent closing the lightbox
-        let index = imageUrls.indexOf(selectedImage);
-        if (index < imageUrls.length - 1) {
-            selectedImage = imageUrls[index + 1];
+        if (event) event.stopPropagation();
+        let index = imageEntries.findIndex((img) => img.full === selectedImage);
+        if (index < imageEntries.length - 1) {
+            selectedImage = imageEntries[index + 1].full;
         }
     }
 
+    // Go to previous image.
     function prevImage(event) {
-        event.stopPropagation(); // Prevent closing the lightbox
-        let index = imageUrls.indexOf(selectedImage);
+        if (event) event.stopPropagation();
+        let index = imageEntries.findIndex((img) => img.full === selectedImage);
         if (index > 0) {
-            selectedImage = imageUrls[index - 1];
+            selectedImage = imageEntries[index - 1].full;
         }
     }
 
-    function selectImage(event, image) {
-        event.stopPropagation(); // Prevent closing the lightbox
-        selectedImage = image;
+    // Select a specific image (from thumbnail navigation).
+    function selectImage(event, fullImage) {
+        event.stopPropagation();
+        selectedImage = fullImage;
     }
 
+    // For swipe gestures.
     function handleTouchStart(event) {
         startX = event.touches[0].clientX;
     }
@@ -43,35 +49,25 @@
     function handleTouchEnd(event) {
         let endX = event.changedTouches[0].clientX;
         if (startX - endX > 50) {
-            nextImage(event); // Swipe Left
+            nextImage(event);
         } else if (endX - startX > 50) {
-            prevImage(event); // Swipe Right
+            prevImage(event);
         }
     }
 
-    // async function fetchImages() {
-    //     try {
-    //         const response = await fetch(
-    //             "https://karmukil.tunnelagent.com/AiKart/",
-    //         );
-    //         const html = await response.text();
+    // Handle arrow keys and Esc key.
+    function handleKeyDown(event) {
+        if (!selectedImage) return; // Only act if lightbox is open.
+        if (event.key === "ArrowRight") {
+            nextImage();
+        } else if (event.key === "ArrowLeft") {
+            prevImage();
+        } else if (event.key === "Escape") {
+            selectedImage = null;
+        }
+    }
 
-    //         //console.log("Fetched HTML:", html);
-
-    //         imageUrls =
-    //             html
-    //                 .match(/href="([^"]+\.(jpg|png|gif|jpeg|webp))"/gi)
-    //                 ?.map(
-    //                     (link) =>
-    //                         `https://karmukil.tunnelagent.com/AiKart/${link.replace(/href="|"/g, "")}`,
-    //                 ) || [];
-
-    //         console.log("Updated Image URLs:", imageUrls);
-    //     } catch (error) {
-    //         console.error("Error fetching images:", error);
-    //     }
-    // }
-
+    // Fetch images from the server.
     async function fetchImages() {
         try {
             const response = await fetch(
@@ -79,31 +75,24 @@
             );
             const html = await response.text();
 
-            const imageEntries = [];
+            const imageEntriesData = [];
             const regex =
                 /<a href="([^"]+\.(jpg|png|gif|jpeg|webp))">.*?<\/a>\s+(\d{2}-\w{3}-\d{4} \d{2}:\d{2})/gi;
-
             let match;
             while ((match = regex.exec(html)) !== null) {
                 const fileName = match[1];
-                const fileDate = match[3]; // Extract the date-time
-
-                // Convert date string to Date object
+                const fileDate = match[3];
                 const dateObj = new Date(fileDate.replace(/-/g, " "));
-
-                imageEntries.push({
-                    url: `https://karmukil.tunnelagent.com/AiKart/${fileName}`,
+                imageEntriesData.push({
+                    thumb: `https://karmukil.tunnelagent.com/AiKart/th/${fileName}`,
+                    full: `https://karmukil.tunnelagent.com/AiKart/${fileName}`,
                     date: dateObj,
                 });
             }
 
-            // Sort images by date (newest first)
-            imageEntries.sort((a, b) => b.date - a.date);
-
-            // Extract sorted URLs and update the reactive variable
-            imageUrls = [...imageEntries.map((entry) => entry.url)]; // Ensure reactivity
-
-            //console.log("Sorted Image URLs:", imageUrls);
+            // Sort images by date (newest first).
+            imageEntriesData.sort((a, b) => b.date - a.date);
+            imageEntries = [...imageEntriesData]; // Update the reactive variable.
         } catch (error) {
             console.error("Error fetching images:", error);
         }
@@ -112,19 +101,22 @@
     fetchImages();
 </script>
 
-<!-- Image Grid -->
+<!-- Listen for keydown events on the window -->
+<svelte:window on:keydown={handleKeyDown} />
+
+<!-- Image Grid with Thumbnails -->
 <div class="gallery">
-    {#each imageUrls as image}
+    {#each imageEntries as image}
         <img
-            src={image}
+            src={image.thumb}
             alt="Gallery Image"
             loading="lazy"
-            on:click={() => openLightbox(image)}
+            on:click={() => openLightbox(image.full)}
         />
     {/each}
 </div>
 
-<!-- Lightbox -->
+<!-- Lightbox for Full Images -->
 {#if selectedImage}
     <div
         class="lightbox"
@@ -139,10 +131,10 @@
 
         <!-- Thumbnail Navigation -->
         <div class="thumbnails">
-            {#each imageUrls as thumb}
+            {#each imageEntries as thumb}
                 <img
-                    src={thumb}
-                    on:click={(event) => selectImage(event, thumb)}
+                    src={thumb.thumb}
+                    on:click={(event) => selectImage(event, thumb.full)}
                 />
             {/each}
         </div>
@@ -158,18 +150,15 @@
     }
     .gallery img {
         flex-grow: 1;
-        max-width: calc(20% - 10px); /* Adjust based on how many per row */
+        max-width: calc(20% - 10px);
         height: auto;
         object-fit: cover;
         border-radius: 8px;
         transition: transform 0.2s ease-in-out;
-        /* will-change: transform; */
     }
-
     .gallery img:hover {
         transform: scale(1.15);
     }
-
     .lightbox {
         position: fixed;
         top: 0;
@@ -193,17 +182,14 @@
         display: flex;
         justify-content: center;
         margin-top: 10px;
-        overflow-x: auto; /* Enables horizontal scrolling */
+        overflow-x: auto;
         white-space: nowrap;
-        max-width: 90%; /* Adjust as needed */
+        max-width: 90%;
         padding-bottom: 10px;
     }
-
-    /* Ensure smooth scrolling */
     .thumbnails::-webkit-scrollbar {
-        height: 8px; /* Scrollbar height */
+        height: 8px;
     }
-
     .thumbnails::-webkit-scrollbar-thumb {
         background: rgba(255, 255, 255, 0.5);
         border-radius: 4px;
@@ -237,17 +223,15 @@
         right: 20px;
     }
 
-    /* Tablet View (3 images per row) */
+    /* Responsive adjustments */
     @media (max-width: 1024px) {
         .gallery img {
-            max-width: calc(33.333% - 10px); /* 3 images per row */
+            max-width: calc(33.333% - 10px);
         }
     }
-
-    /* Mobile View (2 images per row) */
     @media (max-width: 768px) {
         .gallery img {
-            max-width: calc(50% - 10px); /* 2 images per row */
+            max-width: calc(50% - 10px);
         }
     }
 </style>
