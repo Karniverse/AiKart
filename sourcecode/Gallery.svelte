@@ -94,7 +94,16 @@
             imageEntriesData.sort((a, b) => b.date - a.date);
             imageEntries = [...imageEntriesData]; // Update the reactive variable.
         } catch (error) {
-            console.error("Error fetching images:", error);
+            // console.error("Error fetching images:", error);
+            // let errormessage;
+            // if errormessage = "TypeError: NetworkError when attempting to fetch resource."{
+            imageEntries = [];
+            imageEntries.push({
+                thumb: `/error.jpg`,
+                full: `/error.jpg`,
+                //date: dateObj,
+            });
+            //}
         }
     }
 

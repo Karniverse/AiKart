@@ -6,8 +6,8 @@
 </script>
 
 <div>
+	<!-- <Test /> -->
 	<IntroCard />
 	<SearchBox />
 	<Gallery />
-	<!-- <Test /> -->
 </div>

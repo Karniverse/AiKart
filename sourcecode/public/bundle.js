@@ -95,13 +95,6 @@
         node.addEventListener(event, handler, options);
         return () => node.removeEventListener(event, handler, options);
     }
-    function stop_propagation(fn) {
-        return function (event) {
-            event.stopPropagation();
-            // @ts-ignore
-            return fn.call(this, event);
-        };
-    }
     function attr(node, attribute, value) {
         if (value == null)
             node.removeAttribute(attribute);
@@ -110,6 +103,9 @@
     }
     function children(element) {
         return Array.from(element.childNodes);
+    }
+    function set_style(node, key, value, important) {
+        node.style.setProperty(key, value, important ? 'important' : '');
     }
     function custom_event(type, detail) {
         const e = document.createEvent('CustomEvent');
@@ -181,15 +177,6 @@
     let current_component;
     function set_current_component(component) {
         current_component = component;
-    }
-    // TODO figure out if we still want to support
-    // shorthand events, or if we want to implement
-    // a real bubbling mechanism
-    function bubble(component, event) {
-        const callbacks = component.$$.callbacks[event.type];
-        if (callbacks) {
-            callbacks.slice().forEach(fn => fn(event));
-        }
     }
 
     const dirty_components = [];
@@ -412,12 +399,6 @@
             }
         };
     }
-
-    const globals = (typeof window !== 'undefined'
-        ? window
-        : typeof globalThis !== 'undefined'
-            ? globalThis
-            : global);
     function create_component(block) {
         block && block.c();
     }
@@ -620,49 +601,79 @@
     const file = "IntroCard.svelte";
 
     function create_fragment(ctx) {
-    	let div3;
     	let div2;
-    	let div0;
+    	let button;
+    	let img0;
+    	let img0_src_value;
     	let t0;
+    	let div0;
+    	let img1;
+    	let img1_src_value;
     	let t1;
     	let div1;
+    	let t2;
+    	let t3;
+    	let mounted;
+    	let dispose;
 
     	const block = {
     		c: function create() {
-    			div3 = element("div");
     			div2 = element("div");
+    			button = element("button");
+    			img0 = element("img");
+    			t0 = space();
     			div0 = element("div");
-    			t0 = text(/*title*/ ctx[0]);
+    			img1 = element("img");
     			t1 = space();
     			div1 = element("div");
-    			attr_dev(div0, "class", "title svelte-1we3r7c");
-    			add_location(div0, file, 10, 8, 378);
-    			attr_dev(div1, "class", "description svelte-1we3r7c");
-    			add_location(div1, file, 11, 8, 420);
-    			attr_dev(div2, "class", "content svelte-1we3r7c");
-    			add_location(div2, file, 9, 4, 347);
-    			attr_dev(div3, "class", "card svelte-1we3r7c");
-    			add_location(div3, file, 7, 0, 260);
+    			t2 = text("Total Images : ");
+    			t3 = text(/*imagecount*/ ctx[1]);
+    			attr_dev(img0, "class", "homeimage svelte-1dm1ga8");
+    			if (img0.src !== (img0_src_value = "/home.png")) attr_dev(img0, "src", img0_src_value);
+    			attr_dev(img0, "alt", "buttonpng");
+    			attr_dev(img0, "border", "0");
+    			add_location(img0, file, 29, 8, 1088);
+    			attr_dev(button, "class", "homebtn svelte-1dm1ga8");
+    			add_location(button, file, 28, 4, 1026);
+    			attr_dev(img1, "class", "headerimg svelte-1dm1ga8");
+    			if (img1.src !== (img1_src_value = "/header.gif")) attr_dev(img1, "src", img1_src_value);
+    			add_location(img1, file, 33, 8, 1296);
+    			attr_dev(div0, "class", "introimage svelte-1dm1ga8");
+    			add_location(div0, file, 32, 4, 1262);
+    			attr_dev(div1, "class", "count svelte-1dm1ga8");
+    			add_location(div1, file, 35, 4, 1357);
+    			attr_dev(div2, "class", "card svelte-1dm1ga8");
+    			add_location(div2, file, 22, 0, 789);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div3, anchor);
-    			append_dev(div3, div2);
+    			insert_dev(target, div2, anchor);
+    			append_dev(div2, button);
+    			append_dev(button, img0);
+    			append_dev(div2, t0);
     			append_dev(div2, div0);
-    			append_dev(div0, t0);
+    			append_dev(div0, img1);
     			append_dev(div2, t1);
     			append_dev(div2, div1);
-    			div1.innerHTML = /*description*/ ctx[1];
+    			append_dev(div1, t2);
+    			append_dev(div1, t3);
+
+    			if (!mounted) {
+    				dispose = listen_dev(button, "click", /*click_handler*/ ctx[4], false, false, false);
+    				mounted = true;
+    			}
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*title*/ 1) set_data_dev(t0, /*title*/ ctx[0]);
-    			if (dirty & /*description*/ 2) div1.innerHTML = /*description*/ ctx[1];		},
+    			if (dirty & /*imagecount*/ 2) set_data_dev(t3, /*imagecount*/ ctx[1]);
+    		},
     		i: noop,
     		o: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div3);
+    			if (detaching) detach_dev(div2);
+    			mounted = false;
+    			dispose();
     		}
     	};
 
@@ -677,40 +688,64 @@
     	return block;
     }
 
+    function homepage() {
+    	window.location = "https://www.karmukil.in";
+    }
+
     function instance($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots("IntroCard", slots, []);
     	let { title = "AiKart" } = $$props;
     	let { description = "I'm KarMukil, this page exclusively showcases my AI art.<br>All wallpapers are free to download" } = $$props;
+
+    	// export let imageUrl = "https://via.placeholder.com/300";
+    	let imagecount = 0;
+
+    	window.addEventListener("load", () => {
+    		setTimeout(
+    			() => {
+    				const gallery = document.querySelector(".gallery"); // Select the gallery component
+
+    				if (gallery) {
+    					$$invalidate(1, imagecount = gallery.getElementsByTagName("img").length);
+    				}
+    			},
+    			1000
+    		); // Short delay to ensure external images are counted
+    	});
+
     	const writable_props = ["title", "description"];
 
     	Object.keys($$props).forEach(key => {
     		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<IntroCard> was created with unknown prop '${key}'`);
     	});
 
+    	const click_handler = () => homepage();
+
     	$$self.$$set = $$props => {
-    		if ("title" in $$props) $$invalidate(0, title = $$props.title);
-    		if ("description" in $$props) $$invalidate(1, description = $$props.description);
+    		if ("title" in $$props) $$invalidate(2, title = $$props.title);
+    		if ("description" in $$props) $$invalidate(3, description = $$props.description);
     	};
 
-    	$$self.$capture_state = () => ({ title, description });
+    	$$self.$capture_state = () => ({ title, description, imagecount, homepage });
 
     	$$self.$inject_state = $$props => {
-    		if ("title" in $$props) $$invalidate(0, title = $$props.title);
-    		if ("description" in $$props) $$invalidate(1, description = $$props.description);
+    		if ("title" in $$props) $$invalidate(2, title = $$props.title);
+    		if ("description" in $$props) $$invalidate(3, description = $$props.description);
+    		if ("imagecount" in $$props) $$invalidate(1, imagecount = $$props.imagecount);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [title, description];
+    	return [homepage, imagecount, title, description, click_handler];
     }
 
     class IntroCard extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance, create_fragment, safe_not_equal, { title: 0, description: 1 });
+    		init(this, options, instance, create_fragment, safe_not_equal, { title: 2, description: 3, homepage: 0 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -735,6 +770,14 @@
     	set description(value) {
     		throw new Error("<IntroCard>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
+
+    	get homepage() {
+    		return homepage;
+    	}
+
+    	set homepage(value) {
+    		throw new Error("<IntroCard>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+    	}
     }
 
     function fade(node, { delay = 0, duration = 400, easing = identity }) {
@@ -748,8 +791,6 @@
     }
 
     /* Gallery.svelte generated by Svelte v3.29.4 */
-
-    const { console: console_1 } = globals;
     const file$1 = "Gallery.svelte";
 
     function get_each_context(ctx, list, i) {
@@ -764,7 +805,7 @@
     	return child_ctx;
     }
 
-    // (109:4) {#each imageEntries as image}
+    // (118:4) {#each imageEntries as image}
     function create_each_block_1(ctx) {
     	let img;
     	let img_src_value;
@@ -782,7 +823,7 @@
     			attr_dev(img, "alt", "Gallery Image");
     			attr_dev(img, "loading", "lazy");
     			attr_dev(img, "class", "svelte-imghby");
-    			add_location(img, file$1, 109, 8, 3674);
+    			add_location(img, file$1, 118, 8, 4015);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, img, anchor);
@@ -810,14 +851,14 @@
     		block,
     		id: create_each_block_1.name,
     		type: "each",
-    		source: "(109:4) {#each imageEntries as image}",
+    		source: "(118:4) {#each imageEntries as image}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (120:0) {#if selectedImage}
+    // (129:0) {#if selectedImage}
     function create_if_block(ctx) {
     	let div1;
     	let button0;
@@ -858,17 +899,17 @@
     			}
 
     			attr_dev(button0, "class", "prev svelte-imghby");
-    			add_location(button0, file$1, 127, 8, 4108);
+    			add_location(button0, file$1, 136, 8, 4449);
     			if (img.src !== (img_src_value = /*selectedImage*/ ctx[1])) attr_dev(img, "src", img_src_value);
     			attr_dev(img, "alt", "Full Image");
     			attr_dev(img, "class", "svelte-imghby");
-    			add_location(img, file$1, 128, 8, 4177);
+    			add_location(img, file$1, 137, 8, 4518);
     			attr_dev(button1, "class", "next svelte-imghby");
-    			add_location(button1, file$1, 129, 8, 4231);
+    			add_location(button1, file$1, 138, 8, 4572);
     			attr_dev(div0, "class", "thumbnails svelte-imghby");
-    			add_location(div0, file$1, 132, 8, 4341);
+    			add_location(div0, file$1, 141, 8, 4682);
     			attr_dev(div1, "class", "lightbox svelte-imghby");
-    			add_location(div1, file$1, 120, 4, 3922);
+    			add_location(div1, file$1, 129, 4, 4263);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div1, anchor);
@@ -955,14 +996,14 @@
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(120:0) {#if selectedImage}",
+    		source: "(129:0) {#if selectedImage}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (134:12) {#each imageEntries as thumb}
+    // (143:12) {#each imageEntries as thumb}
     function create_each_block(ctx) {
     	let img;
     	let img_src_value;
@@ -978,7 +1019,7 @@
     			img = element("img");
     			if (img.src !== (img_src_value = /*thumb*/ ctx[14].thumb)) attr_dev(img, "src", img_src_value);
     			attr_dev(img, "class", "svelte-imghby");
-    			add_location(img, file$1, 134, 16, 4426);
+    			add_location(img, file$1, 143, 16, 4767);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, img, anchor);
@@ -1006,7 +1047,7 @@
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(134:12) {#each imageEntries as thumb}",
+    		source: "(143:12) {#each imageEntries as thumb}",
     		ctx
     	});
 
@@ -1042,7 +1083,7 @@
     			if (if_block) if_block.c();
     			if_block_anchor = empty();
     			attr_dev(div, "class", "gallery svelte-imghby");
-    			add_location(div, file$1, 107, 0, 3608);
+    			add_location(div, file$1, 116, 0, 3949);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -1242,15 +1283,20 @@
 
     			$$invalidate(0, imageEntries = [...imageEntriesData]); // Update the reactive variable.
     		} catch(error) {
-    			console.error("Error fetching images:", error);
-    		}
+    			// console.error("Error fetching images:", error);
+    			// let errormessage;
+    			// if errormessage = "TypeError: NetworkError when attempting to fetch resource."{
+    			$$invalidate(0, imageEntries = []);
+
+    			imageEntries.push({ thumb: `/error.jpg`, full: `/error.jpg` }); //date: dateObj,
+    		} //}
     	}
 
     	fetchImages();
     	const writable_props = ["imageEntries"];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1.warn(`<Gallery> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Gallery> was created with unknown prop '${key}'`);
     	});
 
     	const click_handler = image => openLightbox(image.full);
@@ -1414,418 +1460,34 @@
 
     /* TEMP\test.svelte generated by Svelte v3.29.4 */
 
-    const { console: console_1$1 } = globals;
     const file$3 = "TEMP\\test.svelte";
 
-    function get_each_context$1(ctx, list, i) {
-    	const child_ctx = ctx.slice();
-    	child_ctx[15] = list[i];
-    	return child_ctx;
-    }
-
-    function get_each_context_1$1(ctx, list, i) {
-    	const child_ctx = ctx.slice();
-    	child_ctx[18] = list[i];
-    	return child_ctx;
-    }
-
-    // (109:4) {#each imageEntries as image}
-    function create_each_block_1$1(ctx) {
-    	let div;
-    	let img;
-    	let img_src_value;
-    	let t0;
-    	let a;
-    	let t1;
-    	let a_href_value;
-    	let t2;
-    	let mounted;
-    	let dispose;
-
-    	function click_handler_1(...args) {
-    		return /*click_handler_1*/ ctx[11](/*image*/ ctx[18], ...args);
-    	}
-
-    	const block = {
-    		c: function create() {
-    			div = element("div");
-    			img = element("img");
-    			t0 = space();
-    			a = element("a");
-    			t1 = text("⭳");
-    			t2 = space();
-    			if (img.src !== (img_src_value = /*image*/ ctx[18].thumb)) attr_dev(img, "src", img_src_value);
-    			attr_dev(img, "alt", "Gallery Image");
-    			attr_dev(img, "loading", "lazy");
-    			attr_dev(img, "class", "svelte-vvff7p");
-    			add_location(img, file$3, 110, 12, 3717);
-    			attr_dev(a, "class", "download-button svelte-vvff7p");
-    			attr_dev(a, "href", a_href_value = /*image*/ ctx[18].full);
-    			attr_dev(a, "download", "");
-    			attr_dev(a, "target", "_blank");
-    			attr_dev(a, "title", "Download Full Image");
-    			add_location(a, file$3, 116, 12, 3914);
-    			attr_dev(div, "class", "thumb-container svelte-vvff7p");
-    			add_location(div, file$3, 109, 8, 3674);
-    		},
-    		m: function mount(target, anchor) {
-    			insert_dev(target, div, anchor);
-    			append_dev(div, img);
-    			append_dev(div, t0);
-    			append_dev(div, a);
-    			append_dev(a, t1);
-    			append_dev(div, t2);
-
-    			if (!mounted) {
-    				dispose = [
-    					listen_dev(img, "click", click_handler_1, false, false, false),
-    					listen_dev(a, "click", stop_propagation(/*click_handler*/ ctx[10]), false, false, true)
-    				];
-
-    				mounted = true;
-    			}
-    		},
-    		p: function update(new_ctx, dirty) {
-    			ctx = new_ctx;
-
-    			if (dirty & /*imageEntries*/ 1 && img.src !== (img_src_value = /*image*/ ctx[18].thumb)) {
-    				attr_dev(img, "src", img_src_value);
-    			}
-
-    			if (dirty & /*imageEntries*/ 1 && a_href_value !== (a_href_value = /*image*/ ctx[18].full)) {
-    				attr_dev(a, "href", a_href_value);
-    			}
-    		},
-    		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div);
-    			mounted = false;
-    			run_all(dispose);
-    		}
-    	};
-
-    	dispatch_dev("SvelteRegisterBlock", {
-    		block,
-    		id: create_each_block_1$1.name,
-    		type: "each",
-    		source: "(109:4) {#each imageEntries as image}",
-    		ctx
-    	});
-
-    	return block;
-    }
-
-    // (130:0) {#if selectedImage}
-    function create_if_block$1(ctx) {
+    function create_fragment$3(ctx) {
     	let div1;
-    	let button0;
-    	let t1;
-    	let img;
-    	let img_src_value;
-    	let t2;
-    	let button1;
-    	let t4;
     	let div0;
-    	let div1_transition;
-    	let current;
-    	let mounted;
-    	let dispose;
-    	let each_value = /*imageEntries*/ ctx[0];
-    	validate_each_argument(each_value);
-    	let each_blocks = [];
-
-    	for (let i = 0; i < each_value.length; i += 1) {
-    		each_blocks[i] = create_each_block$1(get_each_context$1(ctx, each_value, i));
-    	}
 
     	const block = {
     		c: function create() {
     			div1 = element("div");
-    			button0 = element("button");
-    			button0.textContent = "❮";
-    			t1 = space();
-    			img = element("img");
-    			t2 = space();
-    			button1 = element("button");
-    			button1.textContent = "❯";
-    			t4 = space();
     			div0 = element("div");
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].c();
-    			}
-
-    			attr_dev(button0, "class", "prev svelte-vvff7p");
-    			add_location(button0, file$3, 137, 8, 4445);
-    			if (img.src !== (img_src_value = /*selectedImage*/ ctx[1])) attr_dev(img, "src", img_src_value);
-    			attr_dev(img, "alt", "Full Image");
-    			attr_dev(img, "class", "svelte-vvff7p");
-    			add_location(img, file$3, 138, 8, 4514);
-    			attr_dev(button1, "class", "next svelte-vvff7p");
-    			add_location(button1, file$3, 139, 8, 4568);
-    			attr_dev(div0, "class", "thumbnails svelte-vvff7p");
-    			add_location(div0, file$3, 142, 8, 4678);
-    			attr_dev(div1, "class", "lightbox svelte-vvff7p");
-    			add_location(div1, file$3, 130, 4, 4259);
-    		},
-    		m: function mount(target, anchor) {
-    			insert_dev(target, div1, anchor);
-    			append_dev(div1, button0);
-    			append_dev(div1, t1);
-    			append_dev(div1, img);
-    			append_dev(div1, t2);
-    			append_dev(div1, button1);
-    			append_dev(div1, t4);
-    			append_dev(div1, div0);
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(div0, null);
-    			}
-
-    			current = true;
-
-    			if (!mounted) {
-    				dispose = [
-    					listen_dev(button0, "click", /*prevImage*/ ctx[5], false, false, false),
-    					listen_dev(button1, "click", /*nextImage*/ ctx[4], false, false, false),
-    					listen_dev(div1, "click", /*closeLightbox*/ ctx[3], false, false, false),
-    					listen_dev(div1, "touchstart", /*handleTouchStart*/ ctx[7], false, false, false),
-    					listen_dev(div1, "touchend", /*handleTouchEnd*/ ctx[8], false, false, false)
-    				];
-
-    				mounted = true;
-    			}
-    		},
-    		p: function update(ctx, dirty) {
-    			if (!current || dirty & /*selectedImage*/ 2 && img.src !== (img_src_value = /*selectedImage*/ ctx[1])) {
-    				attr_dev(img, "src", img_src_value);
-    			}
-
-    			if (dirty & /*imageEntries, selectImage*/ 65) {
-    				each_value = /*imageEntries*/ ctx[0];
-    				validate_each_argument(each_value);
-    				let i;
-
-    				for (i = 0; i < each_value.length; i += 1) {
-    					const child_ctx = get_each_context$1(ctx, each_value, i);
-
-    					if (each_blocks[i]) {
-    						each_blocks[i].p(child_ctx, dirty);
-    					} else {
-    						each_blocks[i] = create_each_block$1(child_ctx);
-    						each_blocks[i].c();
-    						each_blocks[i].m(div0, null);
-    					}
-    				}
-
-    				for (; i < each_blocks.length; i += 1) {
-    					each_blocks[i].d(1);
-    				}
-
-    				each_blocks.length = each_value.length;
-    			}
-    		},
-    		i: function intro(local) {
-    			if (current) return;
-
-    			add_render_callback(() => {
-    				if (!div1_transition) div1_transition = create_bidirectional_transition(div1, fade, {}, true);
-    				div1_transition.run(1);
-    			});
-
-    			current = true;
-    		},
-    		o: function outro(local) {
-    			if (!div1_transition) div1_transition = create_bidirectional_transition(div1, fade, {}, false);
-    			div1_transition.run(0);
-    			current = false;
-    		},
-    		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div1);
-    			destroy_each(each_blocks, detaching);
-    			if (detaching && div1_transition) div1_transition.end();
-    			mounted = false;
-    			run_all(dispose);
-    		}
-    	};
-
-    	dispatch_dev("SvelteRegisterBlock", {
-    		block,
-    		id: create_if_block$1.name,
-    		type: "if",
-    		source: "(130:0) {#if selectedImage}",
-    		ctx
-    	});
-
-    	return block;
-    }
-
-    // (144:12) {#each imageEntries as thumb}
-    function create_each_block$1(ctx) {
-    	let img;
-    	let img_src_value;
-    	let mounted;
-    	let dispose;
-
-    	function click_handler_2(...args) {
-    		return /*click_handler_2*/ ctx[12](/*thumb*/ ctx[15], ...args);
-    	}
-
-    	const block = {
-    		c: function create() {
-    			img = element("img");
-    			if (img.src !== (img_src_value = /*thumb*/ ctx[15].thumb)) attr_dev(img, "src", img_src_value);
-    			attr_dev(img, "class", "svelte-vvff7p");
-    			add_location(img, file$3, 144, 16, 4763);
-    		},
-    		m: function mount(target, anchor) {
-    			insert_dev(target, img, anchor);
-
-    			if (!mounted) {
-    				dispose = listen_dev(img, "click", click_handler_2, false, false, false);
-    				mounted = true;
-    			}
-    		},
-    		p: function update(new_ctx, dirty) {
-    			ctx = new_ctx;
-
-    			if (dirty & /*imageEntries*/ 1 && img.src !== (img_src_value = /*thumb*/ ctx[15].thumb)) {
-    				attr_dev(img, "src", img_src_value);
-    			}
-    		},
-    		d: function destroy(detaching) {
-    			if (detaching) detach_dev(img);
-    			mounted = false;
-    			dispose();
-    		}
-    	};
-
-    	dispatch_dev("SvelteRegisterBlock", {
-    		block,
-    		id: create_each_block$1.name,
-    		type: "each",
-    		source: "(144:12) {#each imageEntries as thumb}",
-    		ctx
-    	});
-
-    	return block;
-    }
-
-    function create_fragment$3(ctx) {
-    	let div;
-    	let t;
-    	let if_block_anchor;
-    	let current;
-    	let mounted;
-    	let dispose;
-    	let each_value_1 = /*imageEntries*/ ctx[0];
-    	validate_each_argument(each_value_1);
-    	let each_blocks = [];
-
-    	for (let i = 0; i < each_value_1.length; i += 1) {
-    		each_blocks[i] = create_each_block_1$1(get_each_context_1$1(ctx, each_value_1, i));
-    	}
-
-    	let if_block = /*selectedImage*/ ctx[1] && create_if_block$1(ctx);
-
-    	const block = {
-    		c: function create() {
-    			div = element("div");
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].c();
-    			}
-
-    			t = space();
-    			if (if_block) if_block.c();
-    			if_block_anchor = empty();
-    			attr_dev(div, "class", "gallery svelte-vvff7p");
-    			add_location(div, file$3, 107, 0, 3608);
+    			attr_dev(div0, "class", "introimage svelte-1624x73");
+    			set_style(div0, "background-image", "url('/header.gif')");
+    			add_location(div0, file$3, 5, 4, 146);
+    			attr_dev(div1, "class", "card svelte-1624x73");
+    			add_location(div1, file$3, 4, 0, 122);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, div, anchor);
-
-    			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(div, null);
-    			}
-
-    			insert_dev(target, t, anchor);
-    			if (if_block) if_block.m(target, anchor);
-    			insert_dev(target, if_block_anchor, anchor);
-    			current = true;
-
-    			if (!mounted) {
-    				dispose = listen_dev(window, "keydown", /*handleKeyDown*/ ctx[9], false, false, false);
-    				mounted = true;
-    			}
+    			insert_dev(target, div1, anchor);
+    			append_dev(div1, div0);
     		},
-    		p: function update(ctx, [dirty]) {
-    			if (dirty & /*imageEntries, openLightbox*/ 5) {
-    				each_value_1 = /*imageEntries*/ ctx[0];
-    				validate_each_argument(each_value_1);
-    				let i;
-
-    				for (i = 0; i < each_value_1.length; i += 1) {
-    					const child_ctx = get_each_context_1$1(ctx, each_value_1, i);
-
-    					if (each_blocks[i]) {
-    						each_blocks[i].p(child_ctx, dirty);
-    					} else {
-    						each_blocks[i] = create_each_block_1$1(child_ctx);
-    						each_blocks[i].c();
-    						each_blocks[i].m(div, null);
-    					}
-    				}
-
-    				for (; i < each_blocks.length; i += 1) {
-    					each_blocks[i].d(1);
-    				}
-
-    				each_blocks.length = each_value_1.length;
-    			}
-
-    			if (/*selectedImage*/ ctx[1]) {
-    				if (if_block) {
-    					if_block.p(ctx, dirty);
-
-    					if (dirty & /*selectedImage*/ 2) {
-    						transition_in(if_block, 1);
-    					}
-    				} else {
-    					if_block = create_if_block$1(ctx);
-    					if_block.c();
-    					transition_in(if_block, 1);
-    					if_block.m(if_block_anchor.parentNode, if_block_anchor);
-    				}
-    			} else if (if_block) {
-    				group_outros();
-
-    				transition_out(if_block, 1, 1, () => {
-    					if_block = null;
-    				});
-
-    				check_outros();
-    			}
-    		},
-    		i: function intro(local) {
-    			if (current) return;
-    			transition_in(if_block);
-    			current = true;
-    		},
-    		o: function outro(local) {
-    			transition_out(if_block);
-    			current = false;
-    		},
+    		p: noop,
+    		i: noop,
+    		o: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(div);
-    			destroy_each(each_blocks, detaching);
-    			if (detaching) detach_dev(t);
-    			if (if_block) if_block.d(detaching);
-    			if (detaching) detach_dev(if_block_anchor);
-    			mounted = false;
-    			dispose();
+    			if (detaching) detach_dev(div1);
     		}
     	};
 
@@ -1840,174 +1502,22 @@
     	return block;
     }
 
-    function instance$3($$self, $$props, $$invalidate) {
+    function instance$3($$self, $$props) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots("Test", slots, []);
-    	let { imageEntries = [] } = $$props; // Array of objects: { thumb, full, date }
-    	let selectedImage = null;
-    	let startX = 0; // For swipe gestures
-
-    	// Open lightbox with the full-size image.
-    	function openLightbox(fullImage) {
-    		$$invalidate(1, selectedImage = fullImage);
-    	}
-
-    	// Close lightbox only if clicking on the background.
-    	function closeLightbox(event) {
-    		if (event.target.classList.contains("lightbox")) {
-    			$$invalidate(1, selectedImage = null);
-    		}
-    	}
-
-    	// Go to next image. If called from a keyboard event, event may be undefined.
-    	function nextImage(event) {
-    		if (event) event.stopPropagation();
-    		let index = imageEntries.findIndex(img => img.full === selectedImage);
-
-    		if (index < imageEntries.length - 1) {
-    			$$invalidate(1, selectedImage = imageEntries[index + 1].full);
-    		}
-    	}
-
-    	// Go to previous image.
-    	function prevImage(event) {
-    		if (event) event.stopPropagation();
-    		let index = imageEntries.findIndex(img => img.full === selectedImage);
-
-    		if (index > 0) {
-    			$$invalidate(1, selectedImage = imageEntries[index - 1].full);
-    		}
-    	}
-
-    	// Select a specific image (from thumbnail navigation).
-    	function selectImage(event, fullImage) {
-    		event.stopPropagation();
-    		$$invalidate(1, selectedImage = fullImage);
-    	}
-
-    	// For swipe gestures.
-    	function handleTouchStart(event) {
-    		startX = event.touches[0].clientX;
-    	}
-
-    	function handleTouchEnd(event) {
-    		let endX = event.changedTouches[0].clientX;
-
-    		if (startX - endX > 50) {
-    			nextImage(event);
-    		} else if (endX - startX > 50) {
-    			prevImage(event);
-    		}
-    	}
-
-    	// Handle arrow keys and Esc key.
-    	function handleKeyDown(event) {
-    		if (!selectedImage) return; // Only act if lightbox is open.
-
-    		if (event.key === "ArrowRight") {
-    			nextImage();
-    		} else if (event.key === "ArrowLeft") {
-    			prevImage();
-    		} else if (event.key === "Escape") {
-    			$$invalidate(1, selectedImage = null);
-    		}
-    	}
-
-    	// Fetch images from the server.
-    	async function fetchImages() {
-    		try {
-    			const response = await fetch("https://karmukil.tunnelagent.com/AiKart/");
-    			const html = await response.text();
-    			const imageEntriesData = [];
-    			const regex = /<a href="([^"]+\.(jpg|png|gif|jpeg|webp))">.*?<\/a>\s+(\d{2}-\w{3}-\d{4} \d{2}:\d{2})/gi;
-    			let match;
-
-    			while ((match = regex.exec(html)) !== null) {
-    				const fileName = match[1];
-    				const fileDate = match[3];
-    				const dateObj = new Date(fileDate.replace(/-/g, " "));
-
-    				imageEntriesData.push({
-    					thumb: `https://karmukil.tunnelagent.com/AiKart/th/${fileName}`,
-    					full: `https://karmukil.tunnelagent.com/AiKart/${fileName}`,
-    					date: dateObj
-    				});
-    			}
-
-    			// Sort images by date (newest first).
-    			imageEntriesData.sort((a, b) => b.date - a.date);
-
-    			$$invalidate(0, imageEntries = [...imageEntriesData]); // Update the reactive variable.
-    		} catch(error) {
-    			console.error("Error fetching images:", error);
-    		}
-    	}
-
-    	fetchImages();
-    	const writable_props = ["imageEntries"];
+    	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console_1$1.warn(`<Test> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn(`<Test> was created with unknown prop '${key}'`);
     	});
 
-    	function click_handler(event) {
-    		bubble($$self, event);
-    	}
-
-    	const click_handler_1 = image => openLightbox(image.full);
-    	const click_handler_2 = (thumb, event) => selectImage(event, thumb.full);
-
-    	$$self.$$set = $$props => {
-    		if ("imageEntries" in $$props) $$invalidate(0, imageEntries = $$props.imageEntries);
-    	};
-
-    	$$self.$capture_state = () => ({
-    		fade,
-    		imageEntries,
-    		selectedImage,
-    		startX,
-    		openLightbox,
-    		closeLightbox,
-    		nextImage,
-    		prevImage,
-    		selectImage,
-    		handleTouchStart,
-    		handleTouchEnd,
-    		handleKeyDown,
-    		fetchImages
-    	});
-
-    	$$self.$inject_state = $$props => {
-    		if ("imageEntries" in $$props) $$invalidate(0, imageEntries = $$props.imageEntries);
-    		if ("selectedImage" in $$props) $$invalidate(1, selectedImage = $$props.selectedImage);
-    		if ("startX" in $$props) startX = $$props.startX;
-    	};
-
-    	if ($$props && "$$inject" in $$props) {
-    		$$self.$inject_state($$props.$$inject);
-    	}
-
-    	return [
-    		imageEntries,
-    		selectedImage,
-    		openLightbox,
-    		closeLightbox,
-    		nextImage,
-    		prevImage,
-    		selectImage,
-    		handleTouchStart,
-    		handleTouchEnd,
-    		handleKeyDown,
-    		click_handler,
-    		click_handler_1,
-    		click_handler_2
-    	];
+    	return [];
     }
 
     class Test extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance$3, create_fragment$3, safe_not_equal, { imageEntries: 0 });
+    		init(this, options, instance$3, create_fragment$3, safe_not_equal, {});
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,
@@ -2015,14 +1525,6 @@
     			options,
     			id: create_fragment$3.name
     		});
-    	}
-
-    	get imageEntries() {
-    		throw new Error("<Test>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-    	}
-
-    	set imageEntries(value) {
-    		throw new Error("<Test>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
     	}
     }
 
