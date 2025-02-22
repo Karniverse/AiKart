@@ -26,14 +26,16 @@
         <div class="title">{title}</div>
         <div class="description">{@html description}</div>
     </div> -->
-    <button class="homebtn" on:click={() => homepage()}>
-        <img class="homeimage" src="/home.png" alt="buttonpng" border="0" />
-    </button>
+    <div class="homebtn">
+        <button on:click={() => homepage()}>
+            <img class="homeimage" src="/home.png" alt="buttonpng" border="0" />
+        </button>
+    </div>
     <!-- <div class="introimage" style="background-image: url('/header.gif');"> -->
     <div class="introimage">
         <img class="headerimg" src="/header.gif" />
     </div>
-    <div class="count">Total Images : {imagecount}</div>
+    <div class="count">Total Images<br />{imagecount}</div>
 </div>
 
 <style>
@@ -87,6 +89,13 @@
         border-radius: 12px;
         background-color: white;
     }
+    button {
+        height: auto;
+        border: none;
+        background-color: transparent;
+        transition: transform 0.2s ease-in-out;
+        box-shadow: 10px;
+    }
 
     button:hover {
         transform: scale(1.25);
@@ -95,22 +104,59 @@
         width: 4.5vw;
         margin-left: auto;
         margin-right: auto;
-        height: auto;
-        border: none;
-        background-color: transparent;
-        transition: transform 0.2s ease-in-out;
     }
-    /* Responsive adjustments
-        @media (max-width: 1024px) {
-        .gallery img {
-            max-width: calc(33.333% - 10px);
-        }
-    }
+    /* Responsive adjustments */
+
     @media (max-width: 768px) {
-        .gallery img {
-            max-width: calc(50% - 10px);
+        .card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
         }
-    } */
+
+        div:nth-child(1) {
+            order: 2;
+        }
+
+        div:nth-child(2) {
+            order: 1;
+            grid-column: span 2; /* Make it full width */
+            min-height: fit-content;
+        }
+
+        div:nth-child(3) {
+            order: 3;
+        }
+        button {
+            height: auto;
+            border: none;
+            background-color: transparent;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .count,
+        button {
+            border: 1px solid rgba(0, 0, 0, 0.459);
+            border-radius: 5px;
+            box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.3);
+        }
+
+        .count {
+            width: 60%;
+            font-family: "Lucida Sans", Geneva, Verdana, sans-serif;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 10px;
+            text-align: center;
+        }
+        .button:hover,
+        .introimage:hover {
+            transform: scale(1.05);
+        }
+    }
+
     /* .card {
         border-radius: 12px;
         overflow: hidden;
