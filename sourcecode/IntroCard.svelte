@@ -28,12 +28,20 @@
     </div> -->
     <div class="homebtn">
         <button on:click={() => homepage()}>
-            <img class="homeimage" src="/home.png" alt="buttonpng" border="0" />
+            <img
+                class="homeimage"
+                src="https://raw.githack.com/Karniverse/AiKart/main/home.png"
+                alt="buttonpng"
+                border="0"
+            />
         </button>
     </div>
     <!-- <div class="introimage" style="background-image: url('/header.gif');"> -->
     <div class="introimage">
-        <img class="headerimg" src="/header.gif" />
+        <img
+            class="headerimg"
+            src="https://raw.githack.com/Karniverse/AiKart/main/header.gif"
+        />
     </div>
     <div class="count">Total Images<br />{imagecount}</div>
 </div>
