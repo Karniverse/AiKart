@@ -47,7 +47,7 @@
         slideshowInterval = setInterval(() => {
             imageIndex = getRandomIndex();
             showFullscreen(imageEntries[imageIndex].full);
-        }, 3000); // Change every 3 seconds
+        }, 4000); // Change every 3 seconds
     }
 
     function showFullscreen(imageUrl) {
