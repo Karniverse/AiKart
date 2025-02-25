@@ -1,16 +1,98 @@
 <script>
+    import { onMount } from "svelte";
     export let title = "AiKart";
     export let description =
         "I'm KarMukil, this page exclusively showcases my AI art.<br>All wallpapers are free to download";
     // export let imageUrl = "https://via.placeholder.com/300";
 
     let imagecount = 0;
+    let imageIndex = 0;
+    let isSlideshowActive = false;
+    let slideshowInterval;
+
+    // List of images
+    export let imageEntries = [];
+
+    // function startSlideshow() {
+    //     if (imageEntries.length === 0) return;
+
+    //     isSlideshowActive = true;
+    //     imageIndex = 0;
+    //     showFullscreen(imageEntries[imageIndex].full);
+
+    //     slideshowInterval = setInterval(() => {
+    //         imageIndex = (imageIndex + 1) % imageEntries.length;
+    //         showFullscreen(imageEntries[imageIndex].full);
+    //     }, 3000); // Change every 3 seconds
+    // }
+
+    function startSlideshow() {
+        if (imageEntries.length === 0) return;
+
+        isSlideshowActive = true;
+        let previousIndex = -1;
+
+        function getRandomIndex() {
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * imageEntries.length);
+            } while (randomIndex === previousIndex);
+            previousIndex = randomIndex;
+            return randomIndex;
+        }
+
+        imageIndex = getRandomIndex();
+        showFullscreen(imageEntries[imageIndex].full);
+
+        slideshowInterval = setInterval(() => {
+            imageIndex = getRandomIndex();
+            showFullscreen(imageEntries[imageIndex].full);
+        }, 3000); // Change every 3 seconds
+    }
+
+    function showFullscreen(imageUrl) {
+        const fullscreenContainer = document.getElementById(
+            "fullscreen-slideshow",
+        );
+        if (fullscreenContainer) {
+            fullscreenContainer.style.display = "flex";
+            fullscreenContainer.querySelector("img").src = imageUrl;
+        }
+    }
+
+    function stopAndCloseSlideshow() {
+        isSlideshowActive = false;
+        clearInterval(slideshowInterval);
+
+        const fullscreenContainer = document.getElementById(
+            "fullscreen-slideshow",
+        );
+        if (fullscreenContainer) {
+            fullscreenContainer.style.display = "none";
+        }
+    }
+
+    // Stop slideshow on ESC key
+    onMount(() => {
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                stopAndCloseSlideshow();
+            }
+        });
+    });
 
     window.addEventListener("load", () => {
         setTimeout(() => {
             const gallery = document.querySelector(".gallery"); // Select the gallery component
             if (gallery) {
                 imagecount = gallery.getElementsByTagName("img").length;
+                imageEntries = Array.from(
+                    gallery.getElementsByTagName("img"),
+                ).map((img) => ({
+                    full: img.src.replace("th/", ""),
+                }));
+
+                // console.log("Loaded images:", imageEntries);
             }
         }, 1000); // Short delay to ensure external images are counted
     });
@@ -34,6 +116,11 @@
                 alt="buttonpng"
                 border="0"
             />
+            <br />Home
+        </button>
+        <button on:click={() => startSlideshow()}>
+            <img class="homeimage" src="play.png" alt="buttonpng" border="0" />
+            <br />SlideShow
         </button>
     </div>
     <!-- <div class="introimage" style="background-image: url('/header.gif');"> -->
@@ -44,6 +131,13 @@
         />
     </div>
     <div class="count">Total Images<br />{imagecount}</div>
+    <div
+        id="fullscreen-slideshow"
+        class="fullscreen-slideshow"
+        on:click={stopAndCloseSlideshow}
+    >
+        <img src="" alt="" />
+    </div>
 </div>
 
 <style>
@@ -109,6 +203,8 @@
         transform: scale(1.25);
     }
     .homebtn {
+        display: flex;
+        gap: 40px;
         width: 4.5vw;
         margin-left: auto;
         margin-right: auto;
@@ -163,6 +259,44 @@
         .introimage:hover {
             transform: scale(1.05);
         }
+    }
+
+    .slideshow-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .fullscreen-slideshow {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .fullscreen-slideshow img {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+        transition: opacity 0.5s ease-in-out;
+        border-radius: 10px;
+    }
+
+    .fullscreen-slideshow:active {
+        display: none; /* Close slideshow on click */
     }
 
     /* .card {
