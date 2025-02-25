@@ -11,7 +11,7 @@ This project is a responsive **image gallery** built with **Svelte** that featur
 ### 1. Image Grid with Thumbnails
 - Displays a collection of images.
 - Click on any thumbnail to open the lightbox.
-- Each thumbnail has a **download button** that appears on hover.
+<!-- - Each thumbnail has a **download button** that appears on hover. -->
 
 ### 2. Lightbox
 - Opens images in a larger view.
@@ -45,10 +45,10 @@ npm run dev
 ```sh
 npm run build
 ```
-Project available under sourcecode/public
+Project available under `sourcecode/public`
 
 ## Usage
-- Replace the `hosturl` in sourcecode/gallery.svelte with your image hosting url
+- Replace the `hosturl` in `sourcecode/gallery.svelte` with your image hosting url
 - Start the dev server and open the browser to view the gallery.
 
 ## Future Enhancements
