@@ -5,7 +5,7 @@ This project is a responsive **image gallery** built with **Svelte** that featur
 - A **lightbox** for viewing images in a larger format.
 - **Keyboard navigation** (Next/Prev using arrow keys, Close with ESC key).
 - A **slideshow mode** that plays images in fullscreen automatically.
-- A **hoverable download button** on thumbnails.
+<!-- - A **hoverable download button** on thumbnails. -->
 
 ## Features
 ### 1. Image Grid with Thumbnails
@@ -55,6 +55,7 @@ Project available under `sourcecode/public`
 - Add a **pause/play** button in slideshow mode.
 - Implement lazy loading for better performance.
 - Allow users to select images for a custom slideshow.
+- Add a hovering download button to each image
 
 ## License
 This project is open-source and available under the **MIT License**.
