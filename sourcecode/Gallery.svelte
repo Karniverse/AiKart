@@ -99,8 +99,8 @@
             // if errormessage = "TypeError: NetworkError when attempting to fetch resource."{
             imageEntries = [];
             imageEntries.push({
-                thumb: `/error.jpg`,
-                full: `/error.jpg`,
+                thumb: `error.jpg`,
+                full: `error.jpg`,
                 //date: dateObj,
             });
             //}
