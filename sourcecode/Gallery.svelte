@@ -4,6 +4,7 @@
 
     let selectedImage = null;
     let startX = 0; // For swipe gestures
+    const hosturl = "https://karmukil.tunnelagent.com/AiKart/";
 
     // Open lightbox with the full-size image.
     function openLightbox(fullImage) {
@@ -70,9 +71,7 @@
     // Fetch images from the server.
     async function fetchImages() {
         try {
-            const response = await fetch(
-                "https://karmukil.tunnelagent.com/AiKart/",
-            );
+            const response = await fetch(hosturl);
             const html = await response.text();
 
             const imageEntriesData = [];
@@ -84,8 +83,10 @@
                 const fileDate = match[3];
                 const dateObj = new Date(fileDate.replace(/-/g, " "));
                 imageEntriesData.push({
-                    thumb: `https://karmukil.tunnelagent.com/AiKart/th/${fileName}`,
-                    full: `https://karmukil.tunnelagent.com/AiKart/${fileName}`,
+                    // thumb: `{https://karmukil.tunnelagent.com/AiKart/}th/${fileName}`,
+                    // full: `https://karmukil.tunnelagent.com/AiKart/${fileName}`,
+                    thumb: `${hosturl}th/${fileName}`,
+                    full: `${hosturl}${fileName}`,
                     date: dateObj,
                 });
             }
