@@ -200,6 +200,7 @@
         width: 4.5vw;
         margin-left: auto;
         margin-right: auto;
+        padding-right: 125px;
     }
     /* Responsive adjustments */
 
