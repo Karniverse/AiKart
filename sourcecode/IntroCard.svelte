@@ -247,6 +247,7 @@
             font-weight: bold;
             padding: 10px;
             text-align: center;
+            margin-left: 25px;
         }
         .button:hover,
         .introimage:hover {
