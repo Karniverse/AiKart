@@ -293,6 +293,10 @@
         display: none; /* Close slideshow on click */
     }
 
+    .homeimage {
+        background-color: white;
+    }
+
     /* .card {
         border-radius: 12px;
         overflow: hidden;
