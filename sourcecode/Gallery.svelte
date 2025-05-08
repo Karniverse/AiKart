@@ -4,7 +4,8 @@
 
     let selectedImage = null;
     let startX = 0; // For swipe gestures
-    const hosturl = "https://karmukil.tunnelagent.com/AiKart/";
+    const hosturl = "https://opi.karmukil.in/AiKart/";
+    // const hosturl = "https://karmukil.tunnelagent.com/AiKart/";
 
     // Open lightbox with the full-size image.
     function openLightbox(fullImage) {

@@ -3,7 +3,7 @@
 	import Gallery from "./Gallery.svelte";
 	import SearchBox from "./SearchBox.svelte";
 	// import Test from "./TEMP/test.svelte";
-	// import Test1 from "./TEMP/test1.svelte";
+	import Test1 from "./TEMP/test1.svelte";
 	import Test2 from "./TEMP/test2.svelte";
 </script>
 
@@ -12,6 +12,6 @@
 	<IntroCard />
 	<SearchBox />
 	<Gallery />
-	<!-- <Test />
-	<Test1 /> -->
+	<!-- <Test /> -->
+	<!-- <Test1 /> -->
 </div>
